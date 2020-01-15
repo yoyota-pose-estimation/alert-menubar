@@ -1,6 +1,6 @@
 {
-  "name": "influxdb-menubar",
-  "productName": "ElectronReact",
+  "name": "influxdb-alert-menubar",
+  "productName": "influxdb-alert-menubar",
   "version": "0.1.0",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "scripts": {
@@ -19,8 +19,8 @@
     "test-dev-watch": "concurrently \"yarn start-renderer-dev\" \"START_HOT=1 jest --watch $ARG \""
   },
   "build": {
-    "productName": "influxdb-menubar",
-    "appId": "yoyota.influxdb-menubar",
+    "productName": "alert-menubar",
+    "appId": "yoyota.alert-menubar",
     "files": [
       "dist/",
       "node_modules/",
@@ -63,13 +63,13 @@
     "publish": {
       "provider": "github",
       "owner": "yoyota",
-      "repo": "influxdb-menubar",
+      "repo": "alert-menubar",
       "private": false
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yoyota/influxdb-menubar.git"
+    "url": "git+https://github.com/yoyota-pose-estimation/alert-menubar.git"
   },
   "author": {
     "name": "yoyota",
@@ -77,7 +77,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yoyota/influxdb-menubar/issues"
+    "url": "https://github.com/yoyota-pose-estimation/alert-menubar/issues"
   },
   "keywords": [
     "electron",
@@ -87,7 +87,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/yoyota/influxdb-menubar#readme",
+  "homepage": "https://github.com/yoyota-pose-estimation/alert-menubar#readme",
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
