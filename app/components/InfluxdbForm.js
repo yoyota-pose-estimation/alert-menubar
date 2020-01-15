@@ -13,7 +13,7 @@ export default function() {
   const [queryResult, setQueryResult] = useState()
 
   async function onSubmit(values) {
-    const { url, query } = values
+    const { url, query, below } = values
     const [err, result] = await to(ipcRenderer.invoke("query-test", url, query))
     if (err) {
       setQueryResult(err)
@@ -29,7 +29,7 @@ export default function() {
     }
     setQueryResult(result)
     store.set("influxdb", values)
-    ipcRenderer.send("create-query-interval", url, query)
+    ipcRenderer.send("create-query-interval", url, query, below)
   }
 
   return (
@@ -37,7 +37,11 @@ export default function() {
       <h2 className="mb-4">InfluxDB</h2>
       <Formik
         onSubmit={onSubmit}
-        initialValues={store.get("influxdb", { url: "http://", query: "" })}
+        initialValues={store.get("influxdb", {
+          url: "http://",
+          query: "",
+          below: ""
+        })}
       >
         {({ handleSubmit, handleChange, values }) => (
           <Form onSubmit={handleSubmit}>
@@ -65,6 +69,19 @@ export default function() {
                   type="text"
                   name="query"
                   value={values.query}
+                  onChange={handleChange}
+                />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} md="4" controlId="below">
+              <Form.Label column xs={2}>
+                Below
+              </Form.Label>
+              <Col xs={10}>
+                <Form.Control
+                  type="text"
+                  name="below"
+                  value={values.below}
                   onChange={handleChange}
                 />
               </Col>

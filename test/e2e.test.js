@@ -6,10 +6,11 @@ const Influx = require("influx")
 
 describe("Application launch", () => {
   let app
+  let influx
   const url = process.env.INFLUXDB_URL || "http://localhost:8086/test"
 
   beforeAll(async () => {
-    const influx = new Influx.InfluxDB(url)
+    influx = new Influx.InfluxDB(url)
     await influx.createDatabase("test")
     await influx.writePoints([
       {
@@ -68,10 +69,29 @@ describe("Application launch", () => {
   test("check column alias", async () => {
     const query = `SELECT LAST("value") FROM "cpu_load_short"`
     await app.client.$("input#url").setValue(url)
-    await app.client.$("input#query").addValue(query)
+    await app.client.$("input#query").setValue(query)
     await app.client.click("button[type=submit]")
     expect(await app.client.$("p").getText()).toContain(
       "Query was success but alias name is not menubar"
     )
+  })
+
+  test("check alert show window", async () => {
+    const query = `SELECT LAST("value") as menubar FROM "cpu_load_short"`
+    await app.client.$("input#url").setValue(url)
+    await app.client.$("input#query").setValue(query)
+    await app.client.$("input#below").setValue(0.5)
+    await app.client.click("button[type=submit]")
+    await app.client.pause(5000)
+    expect(await app.browserWindow.isVisible()).toBe(false)
+
+    await influx.writePoints([
+      {
+        measurement: "cpu_load_short",
+        fields: { value: 0.44 }
+      }
+    ])
+    await app.client.pause(1000)
+    expect(await app.browserWindow.isVisible()).toBe(true)
   })
 })
