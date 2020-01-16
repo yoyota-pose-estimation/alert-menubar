@@ -8,6 +8,7 @@ const { NODE_ENV } = process.env
 
 let intervalID
 let mb
+let timeoutID
 let tray
 
 async function createQueryInterval(url, query, below = undefined) {
@@ -33,15 +34,32 @@ async function createQueryInterval(url, query, below = undefined) {
   }, 1000)
 }
 
-ipcMain.on("create-query-interval", async (_, url, query, below) => {
-  createQueryInterval(url, query, below)
+ipcMain.on(
+  "create-query-interval",
+  async (_, url, query, below, timeout = 0) => {
+    clearTimeout(timeoutID)
+    clearInterval(intervalID)
 
-  if (NODE_ENV === "test") {
-    setTimeout(() => {
-      console.log(`test tray title, tray title: ${tray.getTitle()}`)
-    }, 2500)
+    function setClearInterval() {
+      setTimeout(() => {
+        clearInterval(intervalID)
+        mb.showWindow()
+        tray.setTitle("timeout")
+      }, timeout)
+    }
+    function setTimeoutInterval() {
+      createQueryInterval(url, query, below)
+      setClearInterval()
+    }
+    timeoutID = setTimeout(() => setTimeoutInterval(), timeout)
+
+    if (NODE_ENV === "test") {
+      setTimeout(() => {
+        console.log(`test tray title, tray title: ${tray.getTitle()}`)
+      }, 2500)
+    }
   }
-})
+)
 
 ipcMain.handle("query-test", async (_, url, query) => {
   const influx = new Influx.InfluxDB(url)

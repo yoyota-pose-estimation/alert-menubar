@@ -76,6 +76,20 @@ describe("Application launch", () => {
     )
   })
 
+  test("test timeout", async () => {
+    const query = `SELECT LAST("value") as menubar FROM "cpu_load_short"`
+    await app.client.$("input#url").setValue(url)
+    await app.client.$("input#query").setValue(query)
+    await app.client.$("input#below").setValue(0.5)
+    await app.client.$("input#timeout").setValue(2000)
+    await app.client.click("button[type=submit]")
+    expect(await app.browserWindow.isVisible()).toBe(true)
+    await app.client.pause(3000)
+    expect(await app.browserWindow.isVisible()).toBe(false)
+    await app.client.pause(1000)
+    expect(await app.browserWindow.isVisible()).toBe(true)
+  })
+
   test("check alert show window", async () => {
     const query = `SELECT LAST("value") as menubar FROM "cpu_load_short"`
     await app.client.$("input#url").setValue(url)

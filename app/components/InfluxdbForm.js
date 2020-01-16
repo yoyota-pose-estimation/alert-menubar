@@ -13,7 +13,7 @@ export default function() {
   const [queryResult, setQueryResult] = useState()
 
   async function onSubmit(values) {
-    const { url, query, below } = values
+    const { url, query, below, timeout } = values
     const [err, result] = await to(ipcRenderer.invoke("query-test", url, query))
     if (err) {
       setQueryResult(err)
@@ -29,7 +29,7 @@ export default function() {
     }
     setQueryResult(result)
     store.set("influxdb", values)
-    ipcRenderer.send("create-query-interval", url, query, below)
+    ipcRenderer.send("create-query-interval", url, query, below, timeout)
   }
 
   return (
@@ -40,7 +40,8 @@ export default function() {
         initialValues={store.get("influxdb", {
           url: "http://",
           query: "",
-          below: ""
+          below: 0,
+          timeout: 0
         })}
       >
         {({ handleSubmit, handleChange, values }) => (
@@ -79,9 +80,22 @@ export default function() {
               </Form.Label>
               <Col xs={10}>
                 <Form.Control
-                  type="text"
+                  type="number"
                   name="below"
                   value={values.below}
+                  onChange={handleChange}
+                />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} md="4" controlId="timeout">
+              <Form.Label column xs={2}>
+                Time out
+              </Form.Label>
+              <Col xs={10}>
+                <Form.Control
+                  type="number"
+                  name="timeout"
+                  value={values.timeout}
                   onChange={handleChange}
                 />
               </Col>

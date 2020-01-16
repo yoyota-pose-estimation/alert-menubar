@@ -19,7 +19,7 @@
     "test-dev-watch": "concurrently \"yarn start-renderer-dev\" \"START_HOT=1 jest --watch $ARG \""
   },
   "build": {
-    "productName": "alert-menubar",
+    "productName": "alert-menubar-timeout",
     "appId": "yoyota.alert-menubar",
     "files": [
       "dist/",
