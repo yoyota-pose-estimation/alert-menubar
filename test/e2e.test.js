@@ -76,22 +76,20 @@ describe("Application launch", () => {
     )
   })
 
-  test("check alert show window", async () => {
+  // TODO add expect
+  // eslint-disable-next-line jest/expect-expect
+  test("test notification", async () => {
     const query = `SELECT LAST("value") as menubar FROM "cpu_load_short"`
     await app.client.$("input#url").setValue(url)
     await app.client.$("input#query").setValue(query)
-    await app.client.$("input#below").setValue(0.5)
+    await app.client.$("input#below").setValue(0.7)
     await app.client.click("button[type=submit]")
     await app.client.pause(5000)
-    expect(await app.browserWindow.isVisible()).toBe(false)
-
     await influx.writePoints([
       {
         measurement: "cpu_load_short",
-        fields: { value: 0.44 }
+        fields: { value: 0.8 }
       }
     ])
-    await app.client.pause(1000)
-    expect(await app.browserWindow.isVisible()).toBe(true)
   })
 })
