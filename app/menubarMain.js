@@ -1,7 +1,7 @@
 const Influx = require("influx")
 const Store = require("electron-store")
 const { menubar } = require("menubar")
-const { ipcMain, nativeImage, Tray } = require("electron")
+const { ipcMain, nativeImage, Notification, Tray } = require("electron")
 const { to } = require("await-to-js")
 
 const { NODE_ENV } = process.env
@@ -10,8 +10,9 @@ let intervalID
 let mb
 let tray
 
-async function createQueryInterval(url, query, below = undefined) {
+async function createQueryInterval(url, query, below) {
   clearInterval(intervalID)
+  const notification = new Notification({ body: query })
   const influx = new Influx.InfluxDB(url)
   intervalID = setInterval(async () => {
     const [err, result] = await to(influx.query(query))
@@ -26,12 +27,13 @@ async function createQueryInterval(url, query, below = undefined) {
     const value = result[0].menubar
     tray.setTitle(value.toString())
     if (value < below) {
-      mb.showWindow()
+      notification.show()
     } else {
-      mb.hideWindow()
+      notification.close()
     }
   }, 1000)
 }
+exports.createQueryInterval = createQueryInterval
 
 ipcMain.on("create-query-interval", async (_, url, query, below) => {
   createQueryInterval(url, query, below)
@@ -57,7 +59,9 @@ function createMenubar() {
       show: false,
       webPreferences: {
         nodeIntegration: true
-      }
+      },
+      width: 1200,
+      height: 600
     },
     env: { NODE_ENV: "test" },
     index: `file://${__dirname}/app.html`,
@@ -67,7 +71,6 @@ function createMenubar() {
 
   mb.on("ready", () => {
     mb.showWindow()
-    mb.window.maximize()
     const store = new Store()
     const { url, query, below } = store.get("influxdb") || {}
     if (!url || !query) {
