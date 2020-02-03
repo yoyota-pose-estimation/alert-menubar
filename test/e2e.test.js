@@ -83,8 +83,10 @@ describe("Application launch", () => {
     await app.client.$("input#url").setValue(url)
     await app.client.$("input#query").setValue(query)
     await app.client.$("input#below").setValue(0.7)
+    await app.client.$("input#timeout").setValue(1500)
+
     await app.client.click("button[type=submit]")
-    await app.client.pause(5000)
+    await app.client.pause(10000)
     await influx.writePoints([
       {
         measurement: "cpu_load_short",

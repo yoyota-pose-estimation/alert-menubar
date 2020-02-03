@@ -42,18 +42,28 @@ ipcMain.on(
     clearTimeout(timeoutID)
     clearInterval(intervalID)
 
+    const notification = new Notification({
+      body: "timeout",
+      closeButtonText: "test"
+    })
+
     function setClearInterval() {
       setTimeout(() => {
         clearInterval(intervalID)
-        mb.showWindow()
+        notification.show()
         tray.setTitle("timeout")
       }, timeout)
     }
+
     function setTimeoutInterval() {
       createQueryInterval(url, query, below)
       setClearInterval()
     }
+
     timeoutID = setTimeout(() => setTimeoutInterval(), timeout)
+    notification.on("click", () => {
+      timeoutID = setTimeout(() => setTimeoutInterval(), timeout)
+    })
 
     if (NODE_ENV === "test") {
       setTimeout(() => {
