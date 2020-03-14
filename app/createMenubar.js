@@ -28,8 +28,6 @@ async function createQueryInterval(url, query, below) {
     tray.setTitle(value.toString())
     if (value < below) {
       notification.show()
-    } else {
-      notification.close()
     }
   }, 1000)
 }
