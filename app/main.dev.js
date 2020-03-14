@@ -67,6 +67,8 @@ async function createWindow() {
   new AppUpdater()
 }
 
+app.setAppUserModelId(process.execPath)
+
 /**
  * Add event listeners...
  */
