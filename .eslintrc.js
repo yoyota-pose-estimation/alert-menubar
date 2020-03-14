@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: ["jest", "promise", "prettier", "react", "react-hooks"],
   rules: {
+    "no-console": "off",
     "no-alert": "error",
     "no-param-reassign": ["error", { props: false }],
     "no-unused-vars": [
