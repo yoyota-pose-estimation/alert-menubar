@@ -57,13 +57,6 @@ describe("Application launch", () => {
     test("get query result text", async () => {
       expect(await app.client.$("p").getText()).toContain(`menubar":0.64`)
     })
-
-    test("menubar tray test", async () => {
-      await app.client.pause(5000)
-      const logs = await app.client.getMainProcessLogs()
-      const expected = ["test tray title, tray title: 0.64"]
-      expect(logs).toEqual(expect.arrayContaining(expected))
-    })
   })
 
   test("check column alias", async () => {
