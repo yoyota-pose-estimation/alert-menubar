@@ -1,0 +1,74 @@
+name: Upload Release Asset
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-release@v1
+        id: create-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - .
+          draft: true
+          prerelease: false
+      - run: echo "${{ steps.create-release.outputs.upload_url }}" > release-url.txt
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-url
+          path: release-url.txt
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run package
+      - if: matrix.os == 'macos-latest'
+        run: rm -r release/mac
+      - if: matrix.os == 'windows-latest'
+        run: rm -r release/win-unpacked
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.os }}
+          path: release
+  upload:
+    needs: build
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: ${{ matrix.os }}
+      - run: zip -r ${{ matrix.os }}.zip ${{ matrix.os }}
+      - uses: actions/download-artifact@v1
+        with:
+          name: release-url
+      - id: get-release-url
+        run: |
+          value=`cat release-url/release-url.txt`
+          echo ::set-output name=upload-url::$value
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get-release-url.outputs.upload-url }}
+          asset_path: ${{ matrix.os }}.zip
+          asset_name: ${{ matrix.os }}.zip
+          asset_content_type: application/zip
