@@ -4,6 +4,11 @@ const log = require("electron-log")
 const { app, BrowserWindow } = require("electron")
 const { autoUpdater } = require("electron-updater")
 const createMenubar = require("./createMenubar")
+const packageJSON = require("../package")
+
+if (process.platform === "win32") {
+  app.setAppUserModelId(packageJSON.build.appId)
+}
 
 class AppUpdater {
   constructor() {
@@ -66,8 +71,6 @@ async function createWindow() {
   // eslint-disable-next-line no-new
   new AppUpdater()
 }
-
-app.setAppUserModelId(process.execPath)
 
 /**
  * Add event listeners...

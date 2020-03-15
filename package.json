@@ -20,7 +20,7 @@
   },
   "build": {
     "productName": "alert-menubar",
-    "appId": "yoyota.alert-menubar",
+    "appId": "org.yoyota.alert-menubar",
     "files": [
       "dist/",
       "node_modules/",
